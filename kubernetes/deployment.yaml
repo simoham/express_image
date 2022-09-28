@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expressjs-deployment
+spec:
+  selector:
+    matchLabels:
+      app: expressapi
+  replicas: 5 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: expressapi
+    spec:
+      containers:
+      - name: expressapi
+        image: simoit/alpineexpress:latest
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expressapi-svc
+  labels:
+    app: expressapi
+  annotations:
+    oci.oraclecloud.com/load-balancer-type: "lb"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8045
+  selector:
+    app: expressapi
